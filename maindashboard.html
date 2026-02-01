@@ -1,0 +1,2716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Triage - Digital Forensic Investigation Platform</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="logo.html">
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-danger: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+            --gradient-success: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.15);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-block-size: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== LAYOUT ===== */
+        .app-container {
+            display: flex;
+            min-block-size: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            inline-size: var(--sidebar-width);
+            background: var(--dark);
+            color: white;
+            position: fixed;
+            block-size: 100vh;
+            padding: 2rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-block-end: 2.5rem;
+            padding-block-end: 1.5rem;
+            border-block-end: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            background: var(--gradient-primary);
+            inline-size: 40px;
+            block-size: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-block-end: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1rem;
+            color: var(--gray-400);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            inline-size: 24px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-inline-start: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-inline-start: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-block-end: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-block-end: 0.5rem;
+        }
+
+        .header-title p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.8rem 1.5rem 0.8rem 3rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 30px;
+            inline-size: 300px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            inset-inline-start: 1rem;
+            inset-block-start: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: bg 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: var(--gray-100);
+        }
+
+        .avatar {
+            inline-size: 45px;
+            block-size: 45px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .action-icon {
+            font-size: 1.3rem;
+        }
+
+        /* ===== DASHBOARD CARDS ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-block-end: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset-block-start: 0;
+            left: 0;
+            inline-size: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card.critical::before { background: var(--danger); }
+        .stat-card.high::before { background: var(--warning); }
+        .stat-card.medium::before { background: var(--info); }
+        .stat-card.low::before { background: var(--success); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            color: var(--gray-400);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--gray-800), var(--gray-900));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        /* ===== CHARTS & VISUALIZATIONS ===== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-block-end: 2rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-block-end: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .time-filter {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        /* ===== ACTIVITY FEED ===== */
+        .activity-feed {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            transition: bg 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: var(--gray-100);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-icon.upload { background: rgba(67, 97, 238, 0.1); color: var(--primary); }
+        .activity-icon.analysis { background: rgba(248, 37, 133, 0.1); color: var(--danger); }
+        .activity-icon.finding { background: rgba(248, 150, 30, 0.1); color: var(--warning); }
+        .activity-icon.resolved { background: rgba(76, 201, 240, 0.1); color: var(--success); }
+
+        .activity-content h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-content p {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        /* ===== CASE CARDS ===== */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .case-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .case-id {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .case-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .case-desc {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .case-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .case-tag.ransomware { background: #fee; color: #d63031; }
+        .case-tag.apt { background: #e3f2fd; color: #1976d2; }
+        .case-tag.malware { background: #f3e5f5; color: #7b1fa2; }
+        .case-tag.insider { background: #e8f5e9; color: #388e3c; }
+
+        .case-priority {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-critical { background: #ffebee; color: #c62828; }
+        .priority-high { background: #fff3e0; color: #ef6c00; }
+        .priority-medium { background: #e3f2fd; color: #1565c0; }
+        .priority-low { background: #e8f5e9; color: #2e7d32; }
+
+        .case-stats {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .case-stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        /* ===== ANALYSIS MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        /* ===== UPLOAD ZONE ===== */
+        .upload-zone {
+            border: 3px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.02);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .upload-text p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .file-list {
+            margin-top: 2rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--gray-100);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .file-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .file-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* ===== FINDINGS TABLE ===== */
+        .findings-table {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .table-body {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            background: var(--gray-100);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        tr:hover {
+            background: var(--gray-100);
+        }
+
+        .severity-badge {
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-critical { background: #ffebee; color: #c62828; }
+        .severity-high { background: #fff3e0; color: #ef6c00; }
+        .severity-medium { background: #e3f2fd; color: #1565c0; }
+        .severity-low { background: #e8f5e9; color: #2e7d32; }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cases-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .modal {
+                width: 95%;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* ===== CUSTOM SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-500);
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .text-center { text-align: center; }
+        .text-right { text-align: end; }
+        .mt-1 { margin-block-start: 0.5rem; }
+        .mt-2 { margin-block-start: 1rem; }
+        .mt-3 { margin-block-start: 1.5rem; }
+        .mb-1 { margin-block-end: 0.5rem; }
+        .mb-2 { margin-block-end: 1rem; }
+        .mb-3 { margin-block-end: 1.5rem; }
+        .p-3 { padding: 1.5rem; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .w-100 { inline-size: 100%; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="logo-text">CyberTriage</div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active">
+                        <i class="fas fa-tachometer-alt nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#cases" class="nav-link">
+                        <i class="fas fa-folder-open nav-icon"></i>
+                        <span>Cases</span>
+                        <span class="nav-badge">12</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#analysis" class="nav-link">
+                        <i class="fas fa-search nav-icon"></i>
+                        <span>Analysis</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#findings" class="nav-link">
+                        <i class="fas fa-bug nav-icon"></i>
+                        <span>Findings</span>
+                        <span class="nav-badge">47</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#reports" class="nav-link">
+                        <i class="fas fa-file-alt nav-icon"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#threat-intel" class="nav-link">
+                        <i class="fas fa-globe-americas nav-icon"></i>
+                        <span>Threat Intel</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#timeline" class="nav-link">
+                        <i class="fas fa-stream nav-icon"></i>
+                        <span>Timeline</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <i class="fas fa-cog nav-icon"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div style="margin-block-start: 3rem; padding-block-start: 1.5rem; border-block-start: 1px solid rgba(255,255,255,0.1);">
+                <div class="stat-card" style="background: rgba(255,255,255,0.05); border: none; color: white;">
+                    <div class="stat-title">System Status</div>
+                    <div class="stat-value" style="-webkit-text-fill-color: white;">All Systems Go</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-check-circle"></i>
+                        Operational
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">
+                    <h1>Digital Forensic Dashboard</h1>
+                    <p>Real-time monitoring and analysis of cyber threats</p>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search cases, evidence, findings...">
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="avatar">JD</div>
+                        <div class="user-info">
+                            <h4>John Doe</h4>
+                            <p>Senior Forensic Analyst</p>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="openUploadModal()">
+                    <i class="fas fa-cloud-upload-alt action-icon"></i>
+                    Upload Evidence
+                </button>
+                <button class="action-btn" onclick="createNewCase()">
+                    <i class="fas fa-plus-circle action-icon"></i>
+                    New Case
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-robot action-icon"></i>
+                    Quick Scan
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-chart-line action-icon"></i>
+                    Generate Report
+                </button>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="dashboard-grid">
+                <div class="stat-card critical">
+                    <div class="stat-header">
+                        <div class="stat-title">Critical Findings</div>
+                        <i class="fas fa-exclamation-triangle stat-icon"></i>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        3% from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Cases</div>
+                        <i class="fas fa-folder-open stat-icon"></i>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        12% from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card medium">
+                    <div class="stat-header">
+                        <div class="stat-title">Evidence Processed</div>
+                        <i class="fas fa-hdd stat-icon"></i>
+                    </div>
+                    <div class="stat-value">143</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        8% from last week
+                    </div>
+                </div>
+                
+                <div class="stat-card low">
+                    <div class="stat-header">
+                        <div class="stat-title">Analysis Completed</div>
+                        <i class="fas fa-chart-bar stat-icon"></i>
+                    </div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        5% from last week
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Visualizations -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Threat Activity Timeline</h3>
+                        <div class="chart-actions">
+                            <section class="time-filter">
+                                <option>Last 24 hours</option>
+                                <option>Last 7 days</option>
+                                <option>Last 30 days</option>
+                                <option>Last 90 days</option>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-line" style="font-size: 3rem; margin-block-end: 1rem; color: var(--gray-400);"></i>
+                            <p>Threat activity visualization</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Severity Distribution</h3>
+                        <div class="chart-actions">
+                            <section class="time-filter">
+                                <option>Current</option>
+                                <option>Trend</option>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-pie" style="font-size: 3rem; margin-block-end: 1rem; color: var(--gray-400);"></i>
+                            <p>Finding severity distribution</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="activity-feed">
+                <div class="table-header">
+                    <h3 class="table-title">Recent Activity</h3>
+                    <div class="table-filters">
+                        <section class="time-filter">
+                            <option>All Activities</option>
+                            <option>Uploads</option>
+                            <option>Analysis</option>
+                            <option>Findings</option>
+                        </section>
+                    </div>
+                </div>
+                <div class="table-body">
+                    <div class="activity-item">
+                        <div class="activity-icon upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>John uploaded 3 evidence files to CASE-2024-001</h4>
+                            <p class="activity-time">5 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon analysis">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Analysis completed for memory.dmp - 12 findings detected</h4>
+                            <p class="activity-time">15 minutes ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon finding">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>New critical finding: Mimikatz tool detected</h4>
+                            <p class="activity-time">1 hour ago</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon resolved">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Case CASE-2023-456 marked as resolved</h4>
+                            <p class="activity-time">2 hours ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Cases -->
+            <div class="activity-feed">
+                <div class="table-header">
+                    <h3 class="table-title">Active Cases</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> View All Cases
+                    </button>
+                </div>
+                <div class="cases-grid">
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-id">CASE-2024-001</div>
+                                <div class="case-title">Ransomware Attack - Finance Department</div>
+                                <div class="case-desc">Ryuk ransomware infection affecting accounting systems</div>
+                                <div class="case-tags">
+                                    <span class="case-tag ransomware">ransomware</span>
+                                    <span class="case-tag">finance</span>
+                                    <span class="case-tag">windows</span>
+                                </div>
+                            </div>
+                            <div class="case-priority priority-critical">
+                                Critical
+                            </div>
+                        </div>
+                        <div class="case-stats">
+                            <div class="case-stat">
+                                <div class="stat-label">Evidence</div>
+                                <div class="stat-number">12</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Findings</div>
+                                <div class="stat-number">8</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Analysts</div>
+                                <div class="stat-number">3</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-id">CASE-2024-002</div>
+                                <div class="case-title">Insider Threat Investigation</div>
+                                <div class="case-desc">Suspicious data exfiltration by former employee</div>
+                                <div class="case-tags">
+                                    <span class="case-tag insider">insider</span>
+                                    <span class="case-tag">data_exfil</span>
+                                    <span class="case-tag">linux</span>
+                                </div>
+                            </div>
+                            <div class="case-priority priority-high">
+                                High
+                            </div>
+                        </div>
+                        <div class="case-stats">
+                            <div class="case-stat">
+                                <div class="stat-label">Evidence</div>
+                                <div class="stat-number">8</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Findings</div>
+                                <div class="stat-number">5</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Analysts</div>
+                                <div class="stat-number">2</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-id">CASE-2024-003</div>
+                                <div class="case-title">APT29 Campaign Analysis</div>
+                                <div class="case-desc">Nation-state actor targeting research data</div>
+                                <div class="case-tags">
+                                    <span class="case-tag apt">apt</span>
+                                    <span class="case-tag">nation_state</span>
+                                    <span class="case-tag">research</span>
+                                </div>
+                            </div>
+                            <div class="case-priority priority-critical">
+                                Critical
+                            </div>
+                        </div>
+                        <div class="case-stats">
+                            <div class="case-stat">
+                                <div class="stat-label">Evidence</div>
+                                <div class="stat-number">25</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Findings</div>
+                                <div class="stat-number">15</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Analysts</div>
+                                <div class="stat-number">5</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Implementation -->
+    <script>
+        // ===== GLOBAL VARIABLES =====
+        let currentPage = 'dashboard';
+        let uploadedFiles = [];
+        let analysisQueue = [];
+        let casesData = [];
+        let findingsData = [];
+
+        // ===== DOM ELEMENTS =====
+        const elements = {
+            sidebar: document.querySelector('.sidebar'),
+            mainContent: document.querySelector('.main-content'),
+            navLinks: document.querySelectorAll('.nav-link'),
+            searchInput: document.querySelector('.search-input'),
+            userProfile: document.querySelector('.user-profile')
+        };
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Cyber Triage Tool Initialized');
+            
+            // Initialize modals
+            createModals();
+            
+            // Load sample data
+            loadSampleData();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update dashboard stats
+            updateDashboardStats();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+        });
+
+        function loadSampleData() {
+            // Load sample cases
+            casesData = [
+                {
+                    id: 'CASE-2024-001',
+                    title: 'Ransomware Attack - Finance Department',
+                    description: 'Ryuk ransomware infection affecting accounting systems',
+                    priority: 'critical',
+                    tags: ['ransomware', 'finance', 'windows'],
+                    stats: { evidence: 12, findings: 8, analysts: 3 }
+                },
+                {
+                    id: 'CASE-2024-002',
+                    title: 'Insider Threat Investigation',
+                    description: 'Suspicious data exfiltration by former employee',
+                    priority: 'high',
+                    tags: ['insider', 'data_exfil', 'linux'],
+                    stats: { evidence: 8, findings: 5, analysts: 2 }
+                }
+            ];
+            
+            // Load sample findings
+            findingsData = [
+                {
+                    id: 'FND-001',
+                    severity: 'critical',
+                    title: 'Suspicious PowerShell Execution',
+                    description: 'Detected encoded PowerShell commands in memory dump',
+                    confidence: 0.95,
+                    indicators: ['EncodedCommand', 'IEX', 'Base64'],
+                    location: 'memory.dmp',
+                    mitigation: 'Review PowerShell execution policies and logging'
+                },
+                {
+                    id: 'FND-002',
+                    severity: 'high',
+                    title: 'Mimikatz-like Tool Detected',
+                    description: 'Tool with credential dumping capabilities found',
+                    confidence: 0.88,
+                    indicators: ['mimikatz', 'lsass', 'credential'],
+                    location: 'C:\\Windows\\Temp\\mimikatz.exe',
+                    mitigation: 'Reset all domain passwords and review authentication logs'
+                }
+            ];
+        }
+
+        function setupEventListeners() {
+            // Navigation links
+            elements.navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('href').substring(1);
+                    navigateTo(page);
+                });
+            });
+            
+            // Search input
+            if (elements.searchInput) {
+                elements.searchInput.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch(this.value);
+                    }
+                });
+            }
+            
+            // User profile dropdown
+            if (elements.userProfile) {
+                elements.userProfile.addEventListener('click', function() {
+                    toggleUserMenu();
+                });
+            }
+            
+            // Handle browser back/forward
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.page) {
+                    navigateTo(event.state.page);
+                }
+            });
+        }
+
+        // ===== NAVIGATION FUNCTIONS =====
+        function navigateTo(page) {
+            console.log(`Navigating to: ${page}`);
+            currentPage = page;
+            
+            // Update active nav link
+            elements.navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${page}`) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update page title and content
+            updatePageContent(page);
+            
+            // Close sidebar on mobile
+            if (window.innerWidth < 992) {
+                elements.sidebar.classList.remove('active');
+            }
+            
+            // Save to history
+            window.history.pushState({page}, '', `#${page}`);
+        }
+
+        function updatePageContent(page) {
+            const headerTitle = document.querySelector('.header-title h1');
+            const headerSubtitle = document.querySelector('.header-title p');
+            
+            switch(page) {
+                case 'dashboard':
+                    headerTitle.textContent = 'Digital Forensic Dashboard';
+                    headerSubtitle.textContent = 'Real-time monitoring and analysis of cyber threats';
+                    showDashboard();
+                    break;
+                case 'cases':
+                    headerTitle.textContent = 'Case Management';
+                    headerSubtitle.textContent = 'Manage and track investigation cases';
+                    showCases();
+                    break;
+                case 'analysis':
+                    headerTitle.textContent = 'Evidence Analysis';
+                    headerSubtitle.textContent = 'Upload and analyze digital evidence';
+                    showAnalysis();
+                    break;
+                case 'findings':
+                    headerTitle.textContent = 'Forensic Findings';
+                    headerSubtitle.textContent = 'Review and manage investigation findings';
+                    showFindings();
+                    break;
+                case 'reports':
+                    headerTitle.textContent = 'Reports & Analytics';
+                    headerSubtitle.textContent = 'Generate and export investigation reports';
+                    showReports();
+                    break;
+                case 'timeline':
+                    headerTitle.textContent = 'Investigation Timeline';
+                    headerSubtitle.textContent = 'Visual timeline of forensic events';
+                    showTimeline();
+                    break;
+                case 'threat-intel':
+                    headerTitle.textContent = 'Threat Intelligence';
+                    headerSubtitle.textContent = 'Real-time threat intelligence feeds';
+                    showThreatIntel();
+                    break;
+                case 'settings':
+                    headerTitle.textContent = 'System Settings';
+                    headerSubtitle.textContent = 'Configure system preferences and users';
+                    showSettings();
+                    break;
+            }
+        }
+
+        function showDashboard() {
+            // This function is already implemented by the static HTML
+            console.log('Showing dashboard content');
+        }
+
+        function showCases() {
+            // Update main content for cases page
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Case Management</h1>
+                        <p>Manage and track investigation cases</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search cases...">
+                        </div>
+                        <button class="btn btn-primary" onclick="createNewCase()">
+                            <i class="fas fa-plus"></i> New Case
+                        </button>
+                    </div>
+                </header>
+                <div class="cases-grid" id="casesContainer">
+                    <!-- Cases will be loaded here -->
+                </div>
+            `;
+            
+            // Load cases into container
+            loadCases();
+        }
+
+        function loadCases() {
+            const container = document.getElementById('casesContainer');
+            if (!container) return;
+            
+            let html = '';
+            casesData.forEach(caseItem => {
+                html += `
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div>
+                                <div class="case-id">${caseItem.id}</div>
+                                <div class="case-title">${caseItem.title}</div>
+                                <div class="case-desc">${caseItem.description}</div>
+                                <div class="case-tags">
+                                    ${caseItem.tags.map(tag => `<span class="case-tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div class="case-priority priority-${caseItem.priority}">
+                                ${caseItem.priority}
+                            </div>
+                        </div>
+                        <div class="case-stats">
+                            <div class="case-stat">
+                                <div class="stat-label">Evidence</div>
+                                <div class="stat-number">${caseItem.stats.evidence}</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Findings</div>
+                                <div class="stat-number">${caseItem.stats.findings}</div>
+                            </div>
+                            <div class="case-stat">
+                                <div class="stat-label">Analysts</div>
+                                <div class="stat-number">${caseItem.stats.analysts}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function showAnalysis() {
+            // Update main content for analysis page
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Evidence Analysis</h1>
+                        <p>Upload and analyze digital evidence</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openUploadModal()">
+                            <i class="fas fa-upload"></i> Upload Evidence
+                        </button>
+                    </div>
+                </header>
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        <h3>Drop Evidence Files Here</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="fileInput" multiple style="display: none;">
+                    </div>
+                </div>
+                <div id="analysisQueue"></div>
+            `;
+        }
+
+        function showFindings() {
+            // Update main content for findings page
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Forensic Findings</h1>
+                        <p>Review and manage investigation findings</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search findings...">
+                        </div>
+                    </div>
+                </header>
+                <div class="findings-table">
+                    <div class="table-header">
+                        <h3 class="table-title">All Findings</h3>
+                        <div class="table-filters">
+                            <select class="time-filter">
+                                <option>All Severities</option>
+                                <option>Critical</option>
+                                <option>High</option>
+                                <option>Medium</option>
+                                <option>Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-body">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Severity</th>
+                                    <th>Finding</th>
+                                    <th>Confidence</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="findingsTableBody">
+                                <!-- Findings will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // Load findings into table
+            loadFindings();
+        }
+
+        function loadFindings() {
+            const tbody = document.getElementById('findingsTableBody');
+            if (!tbody) return;
+            
+            let html = '';
+            findingsData.forEach(finding => {
+                html += `
+                    <tr>
+                        <td>
+                            <span class="severity-badge severity-${finding.severity}">
+                                ${finding.severity}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>${finding.title}</strong><br>
+                            <small style="color: var(--gray-600);">${finding.description}</small>
+                        </td>
+                        <td>${Math.round(finding.confidence * 100)}%</td>
+                        <td>${finding.location}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline" onclick="viewFinding('${finding.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline" onclick="exportFinding('${finding.id}')">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function showReports() {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Reports & Analytics</h1>
+                        <p>Generate and export investigation reports</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Generate Report
+                        </button>
+                    </div>
+                </header>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Reports</div>
+                            <i class="fas fa-file-alt stat-icon"></i>
+                        </div>
+                        <div class="stat-value">47</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">This Month</div>
+                            <i class="fas fa-calendar-alt stat-icon"></i>
+                        </div>
+                        <div class="stat-value">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">PDF Exports</div>
+                            <i class="fas fa-file-pdf stat-icon"></i>
+                        </div>
+                        <div class="stat-value">38</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Scheduled</div>
+                            <i class="fas fa-clock stat-icon"></i>
+                        </div>
+                        <div class="stat-value">5</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showTimeline() {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Investigation Timeline</h1>
+                        <p>Visual timeline of forensic events</p>
+                    </div>
+                </header>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Forensic Timeline</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        Timeline visualization would appear here
+                    </div>
+                </div>
+            `;
+        }
+
+        function showThreatIntel() {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>Threat Intelligence</h1>
+                        <p>Real-time threat intelligence feeds</p>
+                    </div>
+                </header>
+                <div class="dashboard-grid">
+                    <div class="stat-card critical">
+                        <div class="stat-header">
+                            <div class="stat-title">Active Threats</div>
+                            <i class="fas fa-bug stat-icon"></i>
+                        </div>
+                        <div class="stat-value">142</div>
+                    </div>
+                    <div class="stat-card high">
+                        <div class="stat-header">
+                            <div class="stat-title">New IOCs</div>
+                            <i class="fas fa-bullseye stat-icon"></i>
+                        </div>
+                        <div class="stat-value">38</div>
+                    </div>
+                    <div class="stat-card medium">
+                        <div class="stat-header">
+                            <div class="stat-title">CVE Alerts</div>
+                            <i class="fas fa-exclamation-circle stat-icon"></i>
+                        </div>
+                        <div class="stat-value">217</div>
+                    </div>
+                    <div class="stat-card low">
+                        <div class="stat-header">
+                            <div class="stat-title">Feeds Active</div>
+                            <i class="fas fa-rss stat-icon"></i>
+                        </div>
+                        <div class="stat-value">12</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showSettings() {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <header class="header">
+                    <div class="header-title">
+                        <h1>System Settings</h1>
+                        <p>Configure system preferences and users</p>
+                    </div>
+                </header>
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 1.5rem;">System Configuration</h3>
+                    <p>Settings interface would appear here</p>
+                </div>
+            `;
+        }
+
+        // ===== MODAL MANAGEMENT =====
+        function createModals() {
+            // Upload Evidence Modal
+            const uploadModalHTML = `
+                <div class="modal-overlay" id="uploadModal">
+                    <div class="modal">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Upload Evidence</h3>
+                            <button class="modal-close" onclick="closeModal('uploadModal')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="upload-zone" id="uploadZone" 
+                                 ondragover="handleDragOver(event)" 
+                                 ondragleave="handleDragLeave(event)" 
+                                 ondrop="handleFileDrop(event)">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">
+                                    <h3>Drop Evidence Files Here</h3>
+                                    <p>or click to browse</p>
+                                    <input type="file" id="fileInputModal" multiple 
+                                           accept=".raw,.e01,.pcap,.mem,.evtx,.exe,.dll,.ps1,.vbs,.js,.zip,.rar,.7z,.tar,.gz"
+                                           style="display: none;" 
+                                           onchange="handleFileSelect(event)">
+                                    <button class="btn btn-primary" onclick="document.getElementById('fileInputModal').click()">
+                                        <i class="fas fa-folder-open"></i> Browse Files
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="file-list" id="fileList"></div>
+                            
+                            <div class="mt-3">
+                                <h4>Analysis Options</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="checkbox" id="scanMalware" checked>
+                                        <span>Scan for Malware</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="checkbox" id="extractStrings" checked>
+                                        <span>Extract Strings</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="checkbox" id="checkHashes" checked>
+                                        <span>Calculate Hashes</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="checkbox" id="timelineAnalysis" checked>
+                                        <span>Timeline Analysis</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                                <button class="btn btn-outline" onclick="closeModal('uploadModal')">Cancel</button>
+                                <button class="btn btn-primary" onclick="startAnalysis()" id="analyzeBtn">
+                                    <i class="fas fa-play"></i> Start Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Analysis Results Modal
+            const analysisModalHTML = `
+                <div class="modal-overlay" id="analysisModal">
+                    <div class="modal" style="max-width: 1000px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Analysis Results</h3>
+                            <button class="modal-close" onclick="closeModal('analysisModal')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="analysisResults"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // New Case Modal
+            const caseModalHTML = `
+                <div class="modal-overlay" id="caseModal">
+                    <div class="modal">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Create New Case</h3>
+                            <button class="modal-close" onclick="closeModal('caseModal')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="caseForm" onsubmit="createCase(event)">
+                                <div style="display: grid; gap: 1.5rem;">
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Case Title *</label>
+                                        <input type="text" required style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px;" 
+                                               placeholder="e.g., Ransomware Incident - Finance Department">
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                                        <textarea style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px; min-height: 100px;" 
+                                                  placeholder="Describe the incident, affected systems, and initial observations..."></textarea>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Priority</label>
+                                            <select style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px;">
+                                                <option value="1">Critical (1)</option>
+                                                <option value="2">High (2)</option>
+                                                <option value="3" selected>Medium (3)</option>
+                                                <option value="4">Low (4)</option>
+                                                <option value="5">Info (5)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Case Type</label>
+                                            <select style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px;">
+                                                <option value="ransomware">Ransomware</option>
+                                                <option value="data_breach">Data Breach</option>
+                                                <option value="insider_threat">Insider Threat</option>
+                                                <option value="malware">Malware Infection</option>
+                                                <option value="phishing">Phishing Attack</option>
+                                                <option value="apt">Advanced Persistent Threat</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tags</label>
+                                        <input type="text" style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px;" 
+                                               placeholder="Enter tags separated by commas (e.g., finance, windows, ransomware)">
+                                    </div>
+                                    
+                                    <div>
+                                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Assign To</label>
+                                        <select multiple style="width: 100%; padding: 0.8rem; border: 2px solid var(--gray-300); border-radius: 8px; height: 120px;">
+                                            <option value="john">John Doe (Lead Analyst)</option>
+                                            <option value="jane">Jane Smith (Forensic Expert)</option>
+                                            <option value="mike">Mike Johnson (Incident Response)</option>
+                                            <option value="sara">Sara Williams (Malware Analyst)</option>
+                                        </select>
+                                        <small style="color: var(--gray-600);">Hold Ctrl/Cmd to select multiple analysts</small>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                                    <button type="button" class="btn btn-outline" onclick="closeModal('caseModal')">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Create Case
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modals to body
+            document.body.insertAdjacentHTML('beforeend', uploadModalHTML);
+            document.body.insertAdjacentHTML('beforeend', analysisModalHTML);
+            document.body.insertAdjacentHTML('beforeend', caseModalHTML);
+        }
+
+        function openUploadModal() {
+            console.log('Opening upload modal');
+            const modal = document.getElementById('uploadModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Reset file list
+                document.getElementById('fileList').innerHTML = '';
+                uploadedFiles = [];
+            }
+        }
+
+        function openAnalysisModal(results) {
+            const modal = document.getElementById('analysisModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                if (results) {
+                    displayAnalysisResults(results);
+                }
+            }
+        }
+
+        function openCaseModal() {
+            const modal = document.getElementById('caseModal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                // Reset upload zone
+                if (modalId === 'uploadModal') {
+                    const uploadZone = document.getElementById('uploadZone');
+                    if (uploadZone) {
+                        uploadZone.classList.remove('dragover');
+                    }
+                }
+            }
+        }
+
+        // ===== FILE UPLOAD FUNCTIONS =====
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            handleFiles(files);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const uploadZone = document.getElementById('uploadZone');
+            if (uploadZone) {
+                uploadZone.classList.add('dragover');
+            }
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const uploadZone = document.getElementById('uploadZone');
+            if (uploadZone) {
+                uploadZone.classList.remove('dragover');
+            }
+        }
+
+        function handleFileDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const uploadZone = document.getElementById('uploadZone');
+            if (uploadZone) {
+                uploadZone.classList.remove('dragover');
+            }
+            
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            const fileList = document.getElementById('fileList');
+            if (!fileList) return;
+            
+            Array.from(files).forEach(file => {
+                // Check file size (max 2GB)
+                if (file.size > 2 * 1024 * 1024 * 1024) {
+                    showNotification(`File ${file.name} is too large (max 2GB)`, 'error');
+                    return;
+                }
+                
+                // Check file type
+                const allowedTypes = ['.raw', '.e01', '.pcap', '.mem', '.evtx', '.exe', '.dll', '.ps1', '.vbs', '.js', '.zip', '.rar', '.7z', '.tar', '.gz'];
+                const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExt)) {
+                    showNotification(`File type ${fileExt} not supported`, 'warning');
+                    return;
+                }
+                
+                // Add to uploaded files
+                uploadedFiles.push({
+                    id: Date.now() + Math.random(),
+                    file: file,
+                    progress: 0,
+                    status: 'pending'
+                });
+                
+                // Add to UI
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas ${getFileIcon(file.name)}"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                        <div class="file-progress">
+                            <div class="file-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" onclick="removeFile(${uploadedFiles.length - 1})" style="margin-left: 1rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                fileList.appendChild(fileItem);
+                
+                showNotification(`Added: ${file.name}`, 'success');
+            });
+            
+            // Update analyze button
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            if (analyzeBtn) {
+                analyzeBtn.disabled = uploadedFiles.length === 0;
+            }
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            
+            const iconMap = {
+                'raw': 'fa-hdd',
+                'e01': 'fa-hdd',
+                'pcap': 'fa-network-wired',
+                'mem': 'fa-memory',
+                'evtx': 'fa-clipboard-list',
+                'exe': 'fa-cog',
+                'dll': 'fa-puzzle-piece',
+                'ps1': 'fa-terminal',
+                'vbs': 'fa-file-code',
+                'js': 'fa-js',
+                'zip': 'fa-file-archive',
+                'rar': 'fa-file-archive',
+                '7z': 'fa-file-archive',
+                'tar': 'fa-file-archive',
+                'gz': 'fa-file-archive'
+            };
+            
+            return iconMap[ext] || 'fa-file';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateFileList();
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            if (!fileList) return;
+            
+            fileList.innerHTML = '';
+            
+            uploadedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas ${getFileIcon(file.file.name)}"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.file.name}</div>
+                        <div class="file-size">${formatFileSize(file.file.size)}</div>
+                        <div class="file-progress">
+                            <div class="file-progress-bar" style="width: ${file.progress}%"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" onclick="removeFile(${index})" style="margin-left: 1rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                fileList.appendChild(fileItem);
+            });
+            
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            if (analyzeBtn) {
+                analyzeBtn.disabled = uploadedFiles.length === 0;
+            }
+        }
+
+        // ===== ANALYSIS FUNCTIONS =====
+        function startAnalysis() {
+            if (uploadedFiles.length === 0) {
+                showNotification('No files to analyze', 'error');
+                return;
+            }
+            
+            console.log('Starting analysis of', uploadedFiles.length, 'files');
+            
+            // Close upload modal
+            closeModal('uploadModal');
+            
+            // Show analysis progress
+            showAnalysisProgress();
+            
+            // Simulate analysis process
+            simulateAnalysis();
+        }
+
+        function showAnalysisProgress() {
+            // Create progress overlay
+            const progressHTML = `
+                <div class="modal-overlay active" id="progressModal">
+                    <div class="modal" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Analyzing Evidence</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div style="text-align: center; padding: 2rem;">
+                                <div style="width: 80px; height: 80px; margin: 0 auto 2rem; position: relative;">
+                                    <div style="width: 100%; height: 100%; border-radius: 50%; border: 8px solid #e9ecef; border-top: 8px solid #4361ee; animation: spin 1s linear infinite;"></div>
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; color: #4361ee;">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                                
+                                <h4 style="margin-bottom: 1rem;">Processing Evidence Files</h4>
+                                <p style="color: var(--gray-600); margin-bottom: 2rem;">This may take several minutes depending on file size and complexity</p>
+                                
+                                <div id="analysisProgress">
+                                    <!-- Progress will be updated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', progressHTML);
+        }
+
+        function simulateAnalysis() {
+            let completed = 0;
+            const total = uploadedFiles.length;
+            
+            const progressInterval = setInterval(() => {
+                // Update progress for each file
+                uploadedFiles.forEach((file) => {
+                    if (file.progress < 100) {
+                        file.progress += Math.random() * 10;
+                        if (file.progress > 100) file.progress = 100;
+                    }
+                });
+                
+                // Update UI
+                updateAnalysisProgress();
+                
+                // Check if all completed
+                completed = uploadedFiles.filter(f => f.progress >= 100).length;
+                
+                if (completed === total) {
+                    clearInterval(progressInterval);
+                    
+                    // Show completion
+                    setTimeout(() => {
+                        const progressModal = document.getElementById('progressModal');
+                        if (progressModal) {
+                            progressModal.remove();
+                        }
+                        
+                        // Show results
+                        const results = generateAnalysisResults();
+                        openAnalysisModal(results);
+                        
+                        showNotification('Analysis completed successfully!', 'success');
+                    }, 1000);
+                }
+            }, 500);
+        }
+
+        function updateAnalysisProgress() {
+            const progressContainer = document.getElementById('analysisProgress');
+            if (!progressContainer) return;
+            
+            let html = '';
+            uploadedFiles.forEach((file) => {
+                html += `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>${file.file.name}</span>
+                            <span>${Math.round(file.progress)}%</span>
+                        </div>
+                        <div style="height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden;">
+                            <div style="width: ${file.progress}%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            progressContainer.innerHTML = html;
+        }
+
+        function generateAnalysisResults() {
+            // Generate sample analysis results
+            return {
+                timestamp: new Date().toISOString(),
+                filesAnalyzed: uploadedFiles.length,
+                totalFindings: Math.floor(Math.random() * 20) + 5,
+                findings: [
+                    {
+                        id: 'FND-001',
+                        severity: 'critical',
+                        title: 'Suspicious PowerShell Execution',
+                        description: 'Detected encoded PowerShell commands in memory dump',
+                        confidence: 0.95,
+                        indicators: ['EncodedCommand', 'IEX', 'Base64'],
+                        location: 'memory.dmp',
+                        mitigation: 'Review PowerShell execution policies and logging'
+                    },
+                    {
+                        id: 'FND-002',
+                        severity: 'high',
+                        title: 'Mimikatz-like Tool Detected',
+                        description: 'Tool with credential dumping capabilities found',
+                        confidence: 0.88,
+                        indicators: ['mimikatz', 'lsass', 'credential'],
+                        location: 'C:\\Windows\\Temp\\mimikatz.exe',
+                        mitigation: 'Reset all domain passwords and review authentication logs'
+                    },
+                    {
+                        id: 'FND-003',
+                        severity: 'medium',
+                        title: 'Unusual Network Connection',
+                        description: 'Connection to known malicious IP address',
+                        confidence: 0.75,
+                        indicators: ['185.xx.xx.xx:443', 'pastebin.com'],
+                        location: 'network.pcap',
+                        mitigation: 'Block IP in firewall and investigate source system'
+                    }
+                ],
+                hashes: uploadedFiles.map(file => ({
+                    filename: file.file.name,
+                    md5: 'd41d8cd98f00b204e9800998ecf8427e',
+                    sha1: 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
+                    sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+                })),
+                summary: {
+                    critical: Math.floor(Math.random() * 5),
+                    high: Math.floor(Math.random() * 8),
+                    medium: Math.floor(Math.random() * 10),
+                    low: Math.floor(Math.random() * 15)
+                }
+            };
+        }
+
+        function displayAnalysisResults(results) {
+            const resultsContainer = document.getElementById('analysisResults');
+            if (!resultsContainer) return;
+            
+            let html = `
+                <div style="margin-bottom: 2rem;">
+                    <h4>Analysis Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div class="stat-card critical">
+                            <div class="stat-header">
+                                <div class="stat-title">Critical</div>
+                                <i class="fas fa-exclamation-triangle stat-icon"></i>
+                            </div>
+                            <div class="stat-value">${results.summary.critical}</div>
+                        </div>
+                        <div class="stat-card high">
+                            <div class="stat-header">
+                                <div class="stat-title">High</div>
+                                <i class="fas fa-exclamation-circle stat-icon"></i>
+                            </div>
+                            <div class="stat-value">${results.summary.high}</div>
+                        </div>
+                        <div class="stat-card medium">
+                            <div class="stat-header">
+                                <div class="stat-title">Medium</div>
+                                <i class="fas fa-info-circle stat-icon"></i>
+                            </div>
+                            <div class="stat-value">${results.summary.medium}</div>
+                        </div>
+                        <div class="stat-card low">
+                            <div class="stat-header">
+                                <div class="stat-title">Low</div>
+                                <i class="fas fa-flag stat-icon"></i>
+                            </div>
+                            <div class="stat-value">${results.summary.low}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4>Key Findings</h4>
+                    <div class="findings-table" style="margin-top: 1rem;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Severity</th>
+                                    <th>Finding</th>
+                                    <th>Confidence</th>
+                                    <th>Location</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            results.findings.forEach(finding => {
+                html += `
+                    <tr>
+                        <td>
+                            <span class="severity-badge severity-${finding.severity}">
+                                ${finding.severity}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>${finding.title}</strong><br>
+                            <small style="color: var(--gray-600);">${finding.description}</small>
+                        </td>
+                        <td>${Math.round(finding.confidence * 100)}%</td>
+                        <td>${finding.location}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-outline" onclick="viewFinding('${finding.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline" onclick="exportFinding('${finding.id}')">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4>File Hashes</h4>
+                    <div style="background: var(--gray-100); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                        <pre style="font-family: 'Courier New', monospace; font-size: 0.85rem; overflow: auto; max-height: 200px;">
+            `;
+            
+            results.hashes.forEach(hash => {
+                html += `${hash.filename}\n`;
+                html += `  MD5:    ${hash.md5}\n`;
+                html += `  SHA1:   ${hash.sha1}\n`;
+                html += `  SHA256: ${hash.sha256}\n\n`;
+            });
+            
+            html += `
+                        </pre>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button class="btn btn-outline" onclick="exportReport('json')">
+                        <i class="fas fa-download"></i> JSON Report
+                    </button>
+                    <button class="btn btn-outline" onclick="exportReport('pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF Report
+                    </button>
+                    <button class="btn btn-primary" onclick="createCaseFromAnalysis()">
+                        <i class="fas fa-plus"></i> Create Case
+                    </button>
+                </div>
+            `;
+            
+            resultsContainer.innerHTML = html;
+        }
+
+        // ===== CASE MANAGEMENT FUNCTIONS =====
+        function createNewCase() {
+            openCaseModal();
+        }
+
+        function createCase(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Generate case ID
+            const caseId = 'CASE-' + new Date().getTime().toString().slice(-6);
+            
+            const newCase = {
+                id: caseId,
+                title: form.querySelector('input[type="text"]').value,
+                description: form.querySelector('textarea').value,
+                priority: form.querySelector('select').value,
+                type: form.querySelectorAll('select')[1].value,
+                tags: form.querySelectorAll('input')[1].value.split(','),
+                assigned: Array.from(form.querySelectorAll('option:checked')).map(opt => opt.value),
+                created: new Date().toISOString(),
+                status: 'open'
+            };
+            
+            // Add to cases
+            casesData.push(newCase);
+            
+            // Close modal
+            closeModal('caseModal');
+            
+            // Show success message
+            showNotification(`Case ${caseId} created successfully!`, 'success');
+            
+            // Update dashboard
+            updateDashboardStats();
+            
+            // Navigate to cases page
+            navigateTo('cases');
+        }
+
+        function createCaseFromAnalysis() {
+            // Create case from analysis results
+            const caseId = 'CASE-' + new Date().getTime().toString().slice(-6);
+            const newCase = {
+                id: caseId,
+                title: 'Analysis Results - ' + new Date().toLocaleDateString(),
+                description: 'Case created from automated analysis results',
+                priority: 'medium',
+                type: 'malware',
+                tags: ['automated', 'analysis', 'findings'],
+                assigned: ['john'],
+                created: new Date().toISOString(),
+                status: 'open'
+            };
+            
+            casesData.push(newCase);
+            closeModal('analysisModal');
+            showNotification(`Case ${caseId} created from analysis results`, 'success');
+            navigateTo('cases');
+        }
+
+        // ===== DASHBOARD FUNCTIONS =====
+        function updateDashboardStats() {
+            // Update stats cards
+            const stats = {
+                critical: Math.floor(Math.random() * 5) + 8,
+                cases: Math.floor(Math.random() * 20) + 15,
+                evidence: Math.floor(Math.random() * 50) + 30,
+                analysis: Math.floor(Math.random() * 100) + 85
+            };
+            
+            document.querySelectorAll('.stat-value').forEach((el, index) => {
+                const values = Object.values(stats);
+                if (values[index] !== undefined) {
+                    el.textContent = values[index];
+                }
+            });
+        }
+
+        function startRealTimeUpdates() {
+            // Simulate real-time updates
+            setInterval(() => {
+                updateDashboardStats();
+            }, 10000);
+        }
+
+        // ===== HELPER FUNCTIONS =====
+        function performSearch(query) {
+            console.log('Searching for:', query);
+            showNotification(`Searching for "${query}"...`, 'info');
+        }
+
+        function toggleUserMenu() {
+            console.log('Toggling user menu');
+        }
+
+        function viewFinding(findingId) {
+            showNotification(`Viewing finding: ${findingId}`, 'info');
+        }
+
+        function exportFinding(findingId) {
+            showNotification(`Exporting finding: ${findingId}`, 'info');
+        }
+
+        function exportReport(format) {
+            showNotification(`Exporting report as ${format}`, 'info');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '1rem 1.5rem';
+            notification.style.borderRadius = '8px';
+            notification.style.color = 'white';
+            notification.style.fontWeight = '500';
+            notification.style.zIndex = '9999';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            notification.style.transform = 'translateX(120%)';
+            notification.style.transition = 'transform 0.3s ease';
+            
+            // Set color based on type
+            switch(type) {
+                case 'success':
+                    notification.style.background = 'var(--success)';
+                    break;
+                case 'error':
+                    notification.style.background = 'var(--danger)';
+                    break;
+                case 'warning':
+                    notification.style.background = 'var(--warning)';
+                    break;
+                default:
+                    notification.style.background = 'var(--info)';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize dashboard navigation
+        window.addEventListener('load', function() {
+            // Check for hash in URL
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                navigateTo(hash);
+            }
+        });
+    </script>
+</body>
+</html>

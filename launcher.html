@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAUNCH CYBER TRIAGE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #00ff41;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: #00ff41;
+            font-size: 14px;
+            animation: fall linear infinite;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #00ff41;
+            letter-spacing: 3px;
+            animation: glitch 3s infinite;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            color: #00ff9d;
+            letter-spacing: 2px;
+        }
+
+        .cyber-face {
+            width: 200px;
+            height: 200px;
+            margin: 2rem auto;
+            background: 
+                radial-gradient(circle at center, transparent 30%, rgba(0, 255, 65, 0.1) 100%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M100,40 Q140,60 160,100 Q140,140 100,160 Q60,140 40,100 Q60,60 100,40 Z" fill="none" stroke="%2300ff41" stroke-width="2"/><ellipse cx="80" cy="90" rx="15" ry="20" fill="none" stroke="%2300ff41" stroke-width="2"/><ellipse cx="120" cy="90" rx="15" ry="20" fill="none" stroke="%2300ff41" stroke-width="2"/><path d="M80,130 Q100,150 120,130" fill="none" stroke="%2300ff41" stroke-width="2"/></svg>');
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status {
+            margin: 2rem 0;
+            padding: 1rem 2rem;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff41;
+            animation: blink 1s infinite;
+        }
+
+        .btn-launch {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-launch:hover {
+            background: rgba(0, 255, 65, 0.3);
+            box-shadow: 0 0 20px #00ff41;
+            transform: scale(1.05);
+        }
+
+        .btn-launch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.5s ease;
+        }
+        .btn-launch:hover::before {
+            left: 100%;
+        }
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 1;
+            }
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 0 0 10px #00ff41;
+            }
+            20% {
+                text-shadow: -2px 0 red, 2px 0 blue;
+            }
+            40% {
+                text-shadow: 2px 0 red, -2px 0 blue;
+            }
+            60% {
+                text-shadow: -2px 0 red, 2px 0 blue;
+            }
+            80% {
+                text-shadow: 2px 0 red, -2px 0 blue;
+            }
+        }
